@@ -1,0 +1,83 @@
+\begin{thebibliography}{SFM78}
+
+\bibitem[Bea04]{counterCop}
+Paul Beame.
+\newblock \textit{Strange Turing Machines}.
+\newblock \url{https://courses.cs.washington.edu/courses/cse532/04sp/root.pdf},
+  2004.
+\newblock {stranica 5, zadnji paragraf, [Online; posjećeno \today]}.
+
+\bibitem[FS66]{teorem2trake}
+F.C.Hennie and R.~E. Stearns.
+\newblock \textit{Two-Tape Simulation of Multitape Turing Machines }.
+\newblock \url{http://www.dcs.fmph.uniba.sk/~fduris/VKTI/2tape.pdf}, 1966.
+\newblock {[Online; posjećeno \today]}.
+
+\bibitem[FS16]{teoremntime}
+Lance Fortnow and Rahul Santhanam.
+\newblock \textit{New Non-Uniform Lower Bounds for Uniform Classes}.
+\newblock \url{http://drops.dagstuhl.de/opus/volltexte/2016/5850/pdf/29.pdf},
+  2016.
+\newblock {[Online; posjećeno \today]}.
+
+\bibitem[Fü82]{teoremktraka}
+Martin Fürer.
+\newblock \textit{The Tight Deterministic Time Hierarchy}.
+\newblock \url{http://dl.acm.org/citation.cfm?doid=800070.802172}, 1982.
+\newblock {[Online; posjećeno \today]}.
+
+\bibitem[Gha12]{SipserErrata}
+Kaveh Ghasemloo.
+\newblock \textit{Errata for Introduction to the Theory of Computation, 3rd
+  Edition}.
+\newblock \url{http://math.mit.edu/~sipser/itoc-derrs3.1.html}, 2012.
+\newblock {[Online; posjećeno \today]}.
+
+\bibitem[J.68]{hart1968}
+Hartmanis J.
+\newblock \textit{Computational Complexity of One-Tape Turing Machine
+  Computations}.
+\newblock
+  \url{http://cse.iitkgp.ac.in/~goutam/toc/readingMaterial/computational-complexity-one-tape-Hart.pdf},
+  1968.
+\newblock {[Online; posjećeno \today]}.
+
+\bibitem[SFM78]{teoremntime2}
+Joel~I. Seiferas, Michael~J. Fischer, and Albert~R. Meyer.
+\newblock \textit{Separating Nondeterministic Time Complexity Classes }.
+\newblock \url{http://pages.cs.wisc.edu/~jyc/710/seiferas.pdf}, 1978.
+\newblock {[Online; posjećeno \today]}.
+
+\bibitem[Sip06a]{sipser2006}
+Michael Sipser.
+\newblock {\em Introduction to the Theory of Computation}.
+\newblock Course Technology, second edition, 2006.
+
+\bibitem[Sip06b]{sipser2006_2}
+Michael Sipser.
+\newblock {\em Introduction to the Theory of Computation}.
+\newblock Course Technology, second edition, 2006.
+\newblock Page: 370, second paragraph.
+
+\bibitem[so116]{so1}
+{Online errata}.
+\newblock
+  \url{https://cs.stackexchange.com/questions/11280/time-complexity-of-universal-turing-machine-simulations-and-the-time-hierarchy-t?rq=1},
+  2016.
+\newblock {[Online; posjećeno \today]}.
+
+\bibitem[Tre04]{counterCop2}
+Luca Trevisan.
+\newblock \textit{Notes on Hierarchy Theorems}.
+\newblock \url{https://people.eecs.berkeley.edu/~luca/cs172/noteh.pdf}, 2004.
+\newblock {U Lemi 10, [Online; posjećeno \today]}.
+
+\bibitem[Vuk16]{vukovic2016}
+Mladen Vuković.
+\newblock {Složenost algoritama}.
+\newblock
+  \url{https://www.math.pmf.unizg.hr/sites/default/files/pictures/sa-predavanja-2015-11.pdf},
+  2016.
+\newblock {[Online; posjećeno \today]}.
+
+\end{thebibliography}

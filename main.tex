@@ -1,0 +1,616 @@
+%% !TeX program = lualatex
+\documentclass[12pt]{rectors}
+
+\include{preamble/preamble}
+\usepackage{amsthm}
+\newtheorem{theorem}{Teorem}[section]
+\newtheorem{corollary}{Korolar}[theorem]
+\newtheorem{lemma}[theorem]{Lema}
+\newtheorem{definition}{Definicija}[section]
+\newtheorem{remark}{Napomena}[section]
+
+\usepackage{amsfonts}
+
+
+
+\title{Složenost algoritama}
+\renewcommand{\bibname}{}
+
+\begin{document}
+\begin{otherlanguage}{croatian}
+\include{preamble/frontpage}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Table of contents
+%\pagenumbering{gobble} %remove page numberig and restore it later \pagenumbering{arabic}
+%\tableofcontents{}
+%\vfill{}
+%\newpage
+
+%\section{Uvod}
+\pagenumbering{arabic}
+
+\section{Teorem o vremenskoj hijerarhiji}
+%\begin{definition}[Vremenski konstruktibilna funkcija]
+%Neka je $f : \mathbb{N} \to \mathbb{N}$ funkcija koja je veća ili jednaka $O \left %(n log_2 \left ( n \right ) \right ) $.
+%Kažemo da je funkcija f vremenski konstruktibilna ako je funkcija koja riječ
+%$1^n$ preslikava u binarnu reprezentaciju od $f \left ( n \right )$ %Turing–izračunljiva \footnote{Je li se ovdje misli na determinističke ili općenito %turingove strojeve - ta tvrdnja nije bitna za definiciju Turing izračunljivosti, ali %je za složenost izračunavanja. Pogotovo ukoliko u istazu teorema umjesto TIME uzmemo %DTIME.} na nekom stroju
+%vremenske složenosti $O \left ( f \left ( n \right ) \right ) $.
+%\end{definition}
+
+%\begin{definition}[Mala \textit{o} notacija]
+%Za $g$, $f : \mathbb{N} \to \mathbb{N}$ kažemo da vrijedi $g\left ( n \right ) \sim %\text{o} \left ( f \left ( n \right ) \right ) $ ako $\lim_{n \to \infty} %{\frac{g\left ( n \right )} { f \left ( n \right ) }} = 0$
+%\end{definition}
+
+%\begin{definition}[UTM]
+
+%\end{definition}
+% Računarstvo se sve više i više koristi u rješavanju raznih vrsta problema, od medicine do industrije i financija.
+% Prilikom rješavanja računarskog problema, gradi se algoritam koji ga rješava. Dobar algoritma ne odlikuje samo činjenica da
+% algoritam rješava dani problem nego i je li ga rješava u razumnom vremenu, koristeći samo razumno mnogo memorije.
+% Postavlja se pitanje kako procijeniti je li algoritam dovoljno dobar ili nije.
+% Opcija pokušaja i pogreške nije poželjna jer može dovesti do neželjenih posljedica ukoliko 
+% algoritam završi prekasno ili se ni ne izvrši do kraja zbog prevelike potražnje za memorije.
+% Željeli bismo ocijeniti algoritma u što ranijoj fazi izgradnje algoritma, 
+% samo temeljem njegovog teorijskog modela.
+% Riješenje pruža \textit{računarska teorija složenosti} koja daje metodu
+% analize vremenske i prostorne složenosti algoritma u najranijim fazama
+% definirajući aproksimaciju vremena rada i korištene memorije algoritma
+% kao funkciju $f:\mathbb{N} \to \mathbb{N}$ koja duljinu ulaza algoritma 
+% preslikava u vrijeme rada algoritma ili kapacitet korištene memorije prilikom rada algoritma.
+% Na taj način moguće je aproksimirati gornju ogradu za vrijeme rada i korištenu memoriju algoritma.
+
+\begin{theorem}[Teorem o vremenskoj hijerarhiji]
+\label{timehierarhy}
+Za svaku vremenski konstruktibilnu funkciju $f : \mathbb{N} \to \mathbb{N}$ postoji jezik \textbf{L} $\in DTIME(f\left ( n \right ) )$, ali \textbf{L} nije odlučiv 
+u vremenu $o(\frac {f\left ( n \right )}{log_2\left ( f\left ( n \right ) \right )} )$
+\end{theorem}
+
+Zašto proučavati \textit{Teorem o vremenskoj hijerarhiji} i koja je njegova važnost. Upravo spomenuti teorem je dokaz jednoga od najvažnijih rezultata računarske teorije složenosti: \textit{"Bez obzira na složenost problema, uvijek će postojati teži."}
+Općenito, glavnim mjerama složenosti smatramo: (1) vremensku i (2) prostornu složenost.
+\textit{Teorem o vremenskoj hijerarhiji} daje dokaz gornjeg rezultata u terminima vremenske, a \textit{Teorem o prostornoj hijerarhiji} u terminima prostorne složenosti \cite{sipser2006}.
+
+Inačica teorema o vremenskoj hijerarhiji je više: $DTIME$ ili $NTIME$ o Turingovovom stroju s jednom ili više traka.
+Sve inačice sadrže istu ideju, ali se razlikuju u detaljima.
+U ovom radu, bavimo se isključivo $DTIME$ inačicom o Turingovom stroj s jednom trakom koju je moguće pronaći u \cite{sipser2006}. 
+$DTIME$ inačicu o Turingovom stroj s dvije trake moguće je pronaći u \cite{teorem2trake},
+s $k$ traka u \cite{teoremktraka}, a $NTIME$ u \cite{teoremntime} i \cite{teoremntime2}
+
+Sljedeće stranice donose postepeni dokaz odabrane inačice teorema.
+ Kako bi se on što bolje razumio, savjetuje se čitatelja da utvrdi razumijevanje sljedećih pojmova:
+\begin{enumerate}
+    \item Vremenski konstruktibilna funkcija,
+    \item Mala \textit{o} notacija i velika \textit{O} notacija,
+    \item Turingov stroj (TS), vrste i vremenska složenost (DTIME).
+\end{enumerate}
+čije je definicije moguće pronaći u knjizi \cite{sipser2006}.
+
+Organizacija je sljedeća:
+ (1) definicija i analiza vremenske složenosti Turingovih strojeva koji se koriste u dokazu teorema, (2)
+ dokaz teorema gdje se upućuje na nejasnoću koju uvodi, (3) razjašnjavanje spomenute nejasnoće djelomičnom promjenom dokaza teorema.
+
+
+\begin{remark}
+Za Turingove strojeve koje definiramo u nastavku podrazumjevamo sljedeće: (1) abeceda ulaza $\Sigma = \{ 0, 1\}$, (2) radna abeceda $\Gamma = \{ 0,1, \sqcup \}$ gdje 
+$\sqcup$ označava prazan znak.
+Registar stroja koji sadrži $\sqcup$ smatramo da je prazan.
+Skup $Q$ čiji su elementi stanja stroja i funkcija prijelaza definiraju se opisom rada stroja. Definiramo Turingove strojeve (TS) - prepoznačivače koji imaju dva završna stanja: (1) stanje prihvaćanja $q_{da}$, (2) stanje odbijanja $q_{ne}$ i
+TS - pretvarače.
+TS pretvarači su Turingovi strojevi čiji izlaz nije samo završno stanje, $q_{DA}$ ili $q_{NE}$ nego riječ izlazne abecede stroja. Svrha TS pretvarača je
+izračunavanje funkcija.
+Početno stanje je uvijek samo jedno, u oznaci: $q_0$.
+\newline
+Na početku rada Turingovog stroja pretpostavlja se (1) da je glava za čitanje i pisanje postavljena na početak ulazne riječi, (2) na ulaznoj traci / tragu se nalazi samo 
+ulazna riječ i ostale trake / tragovi su prazni (ukoliko nije naglašeno drugačije),
+(3) stroj se nalazi u početnom stanju.\newline
+\end{remark}
+
+U skladu s odabranom inačicom \textit{Teorema o vremenskoj hijerarhiji},
+prilikom dokaza teorema nije preporučljivo korištenje višetračnog Turingovog stroja.
+Višetračni Turingovi strojevi se mogu reducirati na jednotračne prema \textit{Teoremu o redukciji višetračnog} \cite{vukovic2016}. Redukcija povećava vremensku složenost za kvadrat.
+Budući da je bit teorema pokazati da povećanje dopustive vremenske složenosti Turingovih strojeva već za logaritamski faktor odlučuje veću klasu jezika, njezino povećanje za kvadrat nije zanemarivo.\footnote{Povećanje složenosti opisane funkcijom $f(n)$ za kvadrat rezultira složenošću koja se opisuje funkcijom $f(n)^2$.}
+Dakle, ne želimo koristiti višetračne TS-ove. Alternativu predstavljaju višetragovni TS-ovi. 
+\begin{definition}[Turingov stroj s više tragova]
+Neka je $k\in \mathbb{N}$.
+\textbf{k-tragovni Turingov stroj} je uređena (šest+k)-torka $\left ( Q,\Sigma , \Gamma_1, \Gamma_2, \hdots, \Gamma_k ,\delta, q_0, q_{DA} , q_{NE}\right )$, gdje je redom:
+\begin{itemize}
+    \item $Q$ konačan skup koji nazivamo \textbf{stanja},
+    \item $\Sigma$ je konačan skup, čije elemente nazivamo ulazni simboli. Pretpostavljamo da ne sadrži "prazan simbol" kojeg označavamo sa $\sqcup$.
+    \item $\left ( \Gamma_1, \Gamma_2, \hdots, \Gamma_k \right )$  uređena k-torka radnih abeceda stroja i nazivamo ju \textbf{abeceda Turingovog stroja}. 
+    $\Gamma_i$ je radna abeceda $i-tog$ traga stroja.
+    Smatramo kako svaki $\Gamma_i$ sadrži svoj istaknuti simbol $\sqcup$ koji nazivamo "prazan simbol".
+    \item $\delta : Q \times \Gamma_1 \times \Gamma_2 \times \hdots \times \Gamma_k \to Q \times \Gamma_1 \times \Gamma_2 \times \hdots \times \Gamma_k \times \left \{ L,D,S \right\} $ proizvoljna funkcija koju nazivamo \textbf{funkcija prijelaza}.
+\item $q_0$ je element iz $Q$ i naziva se \textbf{početno stanje},
+\item $q_{DA}$ je element iz $Q$ i naziva se \textbf{stanje prihvaćanja},
+\item $q_{NE}$ je element iz $Q$ i naziva se \textbf{stanje odbijanja}.
+\end{itemize}
+
+
+Pretpostavljamo kako  $\left ( \Gamma_1, \Gamma_2, \hdots, \Gamma_k \right ) $ sadrži jedan istaknuti simbol $\sqcup$ koji nazivamo "prazan znak".
+Poistovjećujemo $\alpha \in \Sigma$ s $\left ( \alpha, \sqcup, \hdots, \sqcup \right )$ i smatramo $\Sigma \subset \Gamma$ i pretpostavljamo kako se ulazna riječ, uvijek nalazi na 1. tragu.
+\end{definition}
+
+TS s više tragova možemo zamišljati kao TS s jednom trakom koja se sastoji $k > 1$ redova (tragova). Svaki od redova
+ima svoju abecedu, $\Gamma_i$. U ovom slučaju, $\Gamma_i$ = $\{0,1, \sqcup\}$. 
+Svaka ćelija zapravo stupac.
+TS može čitati i pisati po svakom redu posebno, ali još uvijek postoji samo jedna glava za čitanje i pisanje, jedna pozicija.
+Vašno svojstvo višetragovnog TS-a je da redukcija višetragovnog TS-a na jednotragovni povećava vremensku složenost samo  za konstantni faktor.
+\begin{theorem}[Redukcija višetragovnog Turingovog stroja na jednotragovni \cite{sipser2006_2,hart1968}]
+Neka je $f:\mathbb{N} \to \mathbb{N}$.
+Za svaki k-tragovni TS $K$, vremenske složenosti $f(n)$. Tada postoji jednotragovni TS $K'$ vremenske složenosti $d\cdot f(n)$, $d \in \mathbb{R^+}$, koji mu je ekvivalentan.
+\end{theorem}
+
+Kažemo da je $K'$ nastao redukcijom višetragovnog TS-a $K$ na jednotragovni.
+Glavna ideja dokaza upravo spomenutog teorema leži u definiciji abecede stroja $K'$. Abeceda stroja $K'$ definira se kao Kartezijev produkt svih $\Gamma_i$.
+
+Primjetimo da ukoliko je abeceda svakoga traga stroja $K$ jednaka $A:=\{0,1,\sqcup\}$, tada 
+$K'$ ne će imati abecedu jednaku $A$.
+Ipak, $K'$ je moguće reducirati u ekvivalentni $K''$ sa željenom abecedom ($A$).
+Redukcija se izvodi
+kodiranjem znakove abecede $K'$ znakovima željene abecede.
+Moguće je da će nekoliko znakova željene abecede predstavljati jedan znak stare abecede.
+Prilikom čitanja jednog znaka stare abecede u novoj abecedi, novi stroj troši za konstantni faktor više vremena. Konstantni faktor ovisi o duljini najduljeg koda znaka stare abecede u novoj abecedi što je spomenuto i u službenom pojašnjenju dokaza teorema o vremenskoj složenosti iz literature \cite{sipser2006},
+\cite{SipserErrata}.
+Dakle, klase vremenske složenosti stroja $K$
+i $K''$ se podudaraju.
+
+\begin{remark}
+Od sada pa nadalje, ukoliko postoji dokaz za višetragovni TS $K$ smatra
+se da isti dokaz vrijedi i za jednotragovni TS $K''$ iste abecede i klase vremenske složenosti.
+Nakon dokazane tvrdnje za $K$, korsitimo stroj $K$ misleći pritom na $K''$.
+\end{remark}
+
+Prije dokaza teorema \ref{timehierarhy} o vremenskoj hijerarhiji dokazuju se 3 leme. One za cilj imaju
+pojednostaviti dokaz teorema čineći ga što čitljivijim i lakšim za razumijevanje.
+Kroz 3 leme definiraju se 4 TS-a koja će se koristiti u dokazu.
+
+Ideja dokaza teorema je jednostavna, definirati TS $D$ koji je vremenske složenosti
+$O(f(n))$, a da se jezik koji on odlučuje ne može odlučiti ni na jednom Turingovom stroju
+vremenske složenosti $o( \frac {f\left ( n \right )}{log_2\left ( f\left ( n \right ) \right )})$. Kako bi se pokazalo da jezik $L(D)$ nije odlučiv u $o( \frac {f\left ( n \right )}{log_2\left ( f\left ( n \right ) \right )})$ koristi se postupak dijagonalizacije.
+Primjer korištenja postupka dijagonalizacije može se naći u literaturi
+{\cite{sipser2006}}: dokaz neodlučivosti jezika $A_{TM}$.
+\vspace{2cm}
+
+Krećemo s jednom jednostavnom lemom. \newline
+Budući da iskaz teorema implicitno zahtjeva izračunavanje funkcije koja ovisi o duljini riječi jezika \textbf{L} $:= L(D)$, potrebno ju je moći izračunati i to u vremenu $O \left ( f(n) \right )$.
+Točnije, želimo TS $T_1$ koji može izračunati duljinu ulazne riječi $w$ u vremenu koje ne prelazi $O(f(n))$. $T_1$ će se kasnije koristiti u definiciji stroja $D$ omogućavajući mu isto.
+ \newline
+$T_1$ se definira sljedećom lemom.
+\begin{lemma}\label{lemma:t1}
+Postoji Turingov stroj $T_1$ linearne vremenske složenosti koji za ulaz $w$ izračunava  duljinu ulaza u unarnom zapisu.
+\end{lemma}
+\begin{proof}
+Definiramo Tringov stroj $T_1$ opisom rada stroja:\newline
+$T_1$ = \textit{"na ulazu se nalazi $w$"}\newline
+Dok ne dođe do kraja ulazne riječi radi sljedeće:
+\begin{enumerate}
+    \item zamijeni trenutni znak s 1,
+    \item napravi pomak udesno.
+\end{enumerate}
+Primjetimo kako svako izvođenje 1. i 2. odgovara jednom prijelazu stroja $T_1$ i da
+se 1. i 2. izvršava točno onoliko puta kolika je duljina riječi na ulazu.
+Zaključujemo, $time_{T_1}(n) = O(n)$.
+\end{proof}
+
+Nadalje, potreban je stroj koji izračunava vremenski konstruktibilnu funkciju $f(n)$, 
+a da ne prelazi vremensku složenost $O(f(n))$.
+Postojanje traženog stroja slijedi iz definicije vremenski konstruktibilne funkcije.
+Označimo s $T_2$ jedan takav stroj.
+
+Ukoliko stroj $D$ definiramo na način da prvo pokrenemo $T_1$ pa $T_2$,
+dobivamo stroj vremenske složenosti $O(f(n))$.
+Na taj način, jezik koji odlučuje $D$ je sigurno iz $DTIME(f(n))$, ali potrebno je još i više. Potrebno je osigurati da $L(D)$  nije moguće odlučiti u vremenu $o( \frac {f\left ( n \right )}{log_2\left ( f\left ( n \right ) \right )})$. 
+Dakle, stroj $D$ treba raditi dovoljno dugo, ali ne i predugo kako ne bi prešao $O(f(n))$.
+U tu svrhu definira se brojač koji će brojati ponavljanja određenog skupa slijednih koraka TS-a $D$ i paziti da mu složenost bude veća od $o( \frac {f\left ( n \right )}{log_2\left ( f\left ( n \right ) \right )})$, a manja od $O(f(n))$.
+
+Budući da se želi koristiti brojač koraka, potrebno je u sveukupno vrijeme rada TS-a
+uračunati i mijenjanje vrijednosti brojača. Jedno mijenjanje vrijednosti brojača sastoji se od jednog oduzimanja jedinice od broja u brojaču vremenske složenosti
+$O(log_2(t))$ gdje je $t$ trenutna vrijednost brojača u binarnom zapisu \cite{counterCop,counterCop2}.
+
+
+Gornja granica za složenost stroja je $O(f(n))$ što daje gornju ogradu na broj mijenjanja brojača stroja, $O(\frac {f\left ( n \right )}{log_2\left ( f\left ( n \right ) \right )})$. Neka je broj mijenjanja brojača točno $\left \lceil \frac {f\left ( n \right )}{log_2\left ( f\left ( n \right ) \right )} \right \rceil$\label{broj_koraka}.
+Dakle, prilikom konstrukcije stroja $D$ potrebno je obratiti pažnju
+da vremenska složenost skupa slijednih koraka čije ponavljanje brojač prebrojava ne prelazi $O(log_2(f(n)))$.
+
+Budući da je početna vrijednost brojača različita za svaki ulaz, stroj $D$ ju
+mora biti u mogućnosti izračunati. Također, potrebno je zahtjevati da vremenska složenost
+njezinog izračunavanja ne prelazi $O(f(n))$. Ukoliko izračun početne vrijednosti brojača prelazi 
+$O(f(n))$, sveukupna vremenska složenosti stroja $D$ prelazi dopuštenu granicu.
+
+Da je gornji zahtjev moguće ostvriti dokazuje sljedeća Lema \ref{lemma:t3} za $t=f(n)$ .
+\begin{lemma}\label{lemma:t3}
+Postoji Turingov stroj $T_3$ vremenske složenosti najviše $O(2^n) = O(t)$ koji za ulaz \textbf{t}, $n = log_2(t)$, izračunava $\left \lceil{ t/log_2(t) }\right \rceil$ u binarnom zapisu. 
+\end{lemma}
+\begin{proof}
+Ulazna abeceda stroja je jednaka $\{0,1\}$ pa koristeći \textbf{t} za argument matematičkih funkcija, interpretiramo ga kao broj u binarnom zapisu. 	
+
+Definicija željenog stroja je sljedeća.
+Prvo se definira stroj $T$ s 4 traga.
+Prva 3 traga koriste za dijeljenje, dok se 4. koristi za čuvanje rezultata dijeljenja. 4. trag je izlazni trag stroja. 
+Na početku rada stroja, na prvom tragu se nalazi ulazna riječ $t$. \newline
+Za vrijeme rada, stroj $T$ radi sljedeće:
+\begin{enumerate}
+    \item Prepiše ulaz na 2. trag što je složenosti $O(n)$ i ostavi glavu za čitanje i pisanje na kraju ulazne riječi,
+    
+    \item Na drugom tragu zapiše duljinu ulaza u binarnom obliku tako da kraj riječi na 2. tragu odgovara kraju riječi na 1. tragu što je složenosti $O(n)$.
+    Na drugom tragu se sada nalazi
+    najviše $\left \lceil{log_2(n)}\right \rceil$  znakova.,
+    \item U ravnini zadnjeg znaka riječi na 1. tragu na 4. trag zapiše $0$. To je najviše $O(n)$ koraka.
+    \item Dok god je zadnjih $\left \lceil{log_2(n)}\right \rceil$ znakova na 1. tragu manje od zapisa na 2. tragu:
+    \begin{enumerate}
+        \item pozicionira se na kraj riječi na 1. tragu (indirektno i na 2.) što je složenosti O(n),
+        \item oduzme 2. trag od 1. zapisujući rezultat na 3. trag. Složenost je jedan prolaz po riječi na 1. tragu, tj. $O(n)$,
+        \item obriše riječ na 1. tragu,
+        %($O(n)$ - jedan prolaz od kraja do početka),
+        \item prepiše riječ s 3. traga na 1. trag, 
+        %($O(n)$ - jedan prolaz od početka do kraja),
+        \item broj zapisan na 4. tragu poveća za 1, 
+        %(gornja ograda je $O(n)$).
+    \end{enumerate}
+    \item U ovom trenutku, na 4. tragu se nalazi rezultat željenog dijeljenja. Ukoliko se na 1. tragu nalazi broj različit od 0, povećaj broj na 4. tragu za 1. Gornja ograda složenosti ovoga koraka je $O(n)$.
+\end{enumerate}
+Svi koraci, osim koraka 4 opisa rada stroja su složenosti najviše $O(n)$.
+Provjera uvjeta prilikom ponavljanja koraka 4 je složenosti $O(n)$, dok
+u svakom ponavljanju koraka 4, svaki podkorak ima složenost $O(n)$. Korak 4 se ponavlja
+najviše $\frac{t}{n}$ puta, gdje je t = $2^n$. 
+
+Dakle, složenost stroja $T$ je $O(n+n+n+(2^n/n)(n+n+n+n)+n) = O(2^n)$. 
+Definiramo $T_3 := T''$.
+
+\end{proof}
+
+Kako u dokazu \textit{Teorema o vremenskoj hijerarhiji} želimo koristiti
+postupak dijagonalizacije, želimo da stroj $D$ prihvaća ulaze koji sadrže kodove Turingovih strojeva koje će kasnije simulirati.
+
+Prilikom dokazivanja neodlučivosti $A_{TM}$-a \cite{sipser2006},
+konstruira se stroj $D_{A_{TM}}$ koji prihvaća jezik $L_{A_{TM}}$ koji se sastoji od kodova
+određenih Turingovih strojeva. 
+Budući da složenost stroja $D_{A_{TM}}$ nije bitna,  $D_{A_{TM}}$ za ulaz $\left < M \right >$ simulira cjelokupni rad stroja $M$. Ipak, za stroj $D$, 
+vremenska složenost je bitna. Ograničavajući vrijeme (broj koraka) simulacije,
+omugućava se držanje vremenske složenosti stroja $D$ ispod željene granice.
+U tu svrhu koristimo brojač. Brojač broji koliko se koraka TS-a definiranog ulazom simuliralo zaustavljajući simulaciju kada dosegne $0$.
+ 
+U dokazu \textit{Teorema o vremenskoj hijerarhiji} bitno je moći konstruirati stroj $D$ na
+način da je za $L(D)$ lako pronaći riječ duljine veće od neke donje granice.
+Budući da za $L_{A_{TM}}$ nije jednostavno pronaći takvu riječ, oblik riječi koje će stroj $D$ prihvaćati definiramo malo drugačije, s
+$\left< M \right>01^*$.
+Za riječi oblika $\left< M \right>01^*$ lako je
+pronaći riječ koja je dulja od neke donje granice $n_d \in \mathbb{N}$, npr. $\left< M \right>01^{n_d}$ .
+
+Promotrimo sada kolika je vremenska složenost simulacije konačnog broja koraka Turingovog stroja definiranog na stranici 6 s $\left \lceil{\frac{ f(n)}{log_2(f(n))} }\right \rceil$.
+
+
+\begin{lemma}\label{lemma:t4}\footnote{Za ulaz oblika $\left < M \right >10^*$, $D$ simulira $M$ u vremenu $d \cdot g(n)$ gdje je $d$ neka konstanta, $g(n)$ vremenska složenost stroja $N$.}
+Neka je M Turingov stroj nad abecedom $\Sigma = \{0,1\}$, $\left < M \right >$ njegov kod u abecedi $\Sigma $ i $f: \mathbb{N} \to \mathbb{N}$ vremenski konstruktibilna funkcija.
+Postoji 3-tragovni Turingov stroj $T_4$ koji za ulaz $w \in \Sigma^*$, $w = \left < M \right >01^*$ na prvom tragu i $k := \left \lceil{ \frac{f(n)}{log_2(f(n))} }\right \rceil $ na 2. tragu, simulaira k koraka rada stroja $M$ s ulazom $\left < M \right >01^*$ u vremenu $O(k \cdot log_2(f(n)))$.\newline Broj k je dan u binarnom zapisu.
+\end{lemma}
+\begin{proof}
+
+Definiramo $T_4$ opisom rada stroja.
+Na početku rada stroja $T_4$, 3. trag je prazan.
+3. trag se koristi za pamćenje informacije o funkciji prijelaza stroja $M$ koja je zapisana na odgovarajućem mjestu u $\left < M \right >$.
+
+$T_4$ radi sljedeće:
+\begin{enumerate}
+    \item Prije početka simulacije stroja $M$, jednim prolazom po $w$ (ulaznoj riječi), pronalazi kod funkcije prijelaza stroja $M$ koji zapisuje na 3. trag.
+    Prepisivanje koda funkcije prijelaza s 1. na 3. trag je složenosti $O(n)$. Ispred koda funkcije prijelaza za $M$ zapisuje početno stanje stroja $M$.
+    
+    \item Pomiče sadržaje 2. i 3. traga tako da im je početak poravnat s početkom riječi na 1. tragu. Pomicanje sadržaja 2. i 3. traga omogućava lakše praćenje složenosti stroja $T_4$.
+    Pomicanje sadržaja 2. traga je složenosti \newline $ log_2\left (\left \lceil{ \frac{f(n)}{log_2(f(n))} }\right \rceil \right ) \cdot  \left (n-log_2 \left (\left \lceil{ \frac{f(n)}{log_2(f(n))} }\right \rceil \right ) \right ) \leq log_2(n) \cdot (n-log_2(n)) = O(log_2(n) \cdot n) $. Kako vrijedi $O(log_2(n)) \leq f(n) $ po vremenskoj konstruktibilnosti funkcije $f$, prepisivanje 2. traga je složenosti 
+    $O(f(n))$.
+    
+    Budući da prepisivanje sadržaja 3. traga ne ovisi o ulazu za $M$, već samo o stroju $M$ i veličini koda za $M$, $d = |\left < M \right >|$,
+    pomicanje sadržaja 3. traga je vremenske složenosti $O(d \cdot d) = O(d^2)$. Naime,
+    kraj od $\left < M \right >$ nalazi se najviše $d$ mjesta od početka ulazne riječi
+    pa se početak koda funkcije prijelaza nalazi najviše $d$ mjesta od početka ulazne riječi. Dakle, sveukupna duljina riječi na
+    3. tragu ne prelazi $d$.
+    \item Pomiče glavu na početak riječi na 1. tragu i započinje simulaciju. $T_4$ prilikom simulacije jednog koraka 
+    stroja $M$ radi sljedeće:
+    \begin{itemize}
+        \item Temeljem znak $\alpha \in \{0,1,\sqcup\}$ koji glava čita na prvom tragu i stanja $q_l$ koje se nalazi na početku riječi 3. traga, stroj prolazi po 3. tragu tražeći odgovarajući prijelaz.
+        Potrebno je pronaći prijelaz koji odgovara prijelazu stroja $M$ iz stanja $q_l$ čitajuću $\alpha$. U skladu s pronađenim prijelazom mijenja sadržaje 1. i 3. traga.
+        Složenost ovog koraka ovisi samo o $d$, tj. konstantna je.
+        \begin{remark}
+        Budući da abeceda tragova stroja $M$ ima konačno mnogo znakova, $T_4$ je u mogućnosti čuvati 
+        informaciju o upravo pročitanom znaku na 1. tragu (znaku koji predstavlja ulaz u 
+        funkciju prijelaza stroja $M$ ) u svojoj funkciji prijelaza. Temeljem tog stanja i početnog stanja koraka simulacije zapisanog na početku 
+        riječi 3. traga, stroj $T_4$ prolazi 3. tragom tražeći odgovarajući prijelaz. Pronađeni prijelaz definira novo stanje koje se zapisuje na početak 3. traga, brišući staro stanje. 
+         Prilikom pronalaska odgovarajućeg prijelaza, početno stanje koraka simulacije, $T_4$ ne može pamtiti u svojem stanju stroja. Naime, broj stanja stroja $M$ nije unaprijed definiran, već ga definira ulazna riječ.
+          Dakle, prolažeći 3. tragon, za svaki pronađeni prijelaz funkcije prijelaza potrebno je usporediti jednakost 
+        početnog stanja prijelaza i početno stanje koraka simulacije. 
+        Najveća udaljenost 2 spomenuta stanja na 3. tragu je d. Za svaki pronađeni
+         prijelaz, radi se usporedba najviše d simbola udaljenih najviše d koraka. Budući da i prijelaza ima 
+        najviše d (strogo manje), složenost potrage odgovarajućeg prijelaza u svakom koraku simulacije je $O(d^3)$.
+    
+        Primijetimo kako različitih pomaka glave ima konačno mnogo pa ih $T_4$ pamti u svojoj funkciji prijelaza, kao i informaciju je li u stanju: a) "tražim odgovarajući prijelaz", b) "pronašao sam prijelaz, idem promijeniti trenutno čitani znak na 1. traci". 
+        c) "promijenio sam znak, idem pomaknuti glavu simulacije. 
+        Nadalje, znak riječi 1. traga nad kojem se glava stroja $M$ nalazi prilikom koraka koji se simulira, $T_4$ označava s npr. točkom, tj. proširivanjem abecede na $\Sigma U \Sigma', \Sigma' = \{a^. | a \in \Sigma\}$.
+        Pomicanje glave stroja $M$ simulira se pomicanjem točke u susjedni registar.
+         \end{remark},
+        
+        \item Oduzme 1 broju zapisanom na 2. tragu. Oduzimanje je složenosti $O(log_2(n))$ što u ovom slučaju znači $O \left ( log_2 \left ( \frac{f(n)}{log_2(f(n))} \right ) \right )$ $ = O(log_2(f(n)))$ ,
+        
+        \item Pomakne sadržaje 2. i 3. traga za jedno mjesto definirano upravo simuliranim korakom (prijelazom) u stranu u koju bi se stroj $M$ pomaknuo
+        izvršavajući upravo simulirani prijelaz. Složenost pomaka je $O(log_2(f(n)))$ za 2. trag i $O(d)$, $d = \left | \left <M \right > \right|$ za 3.
+        Na ovaj način se početci riječi na svim tragovima uvijek otprilike poklapaju.
+         Pomicanje sadržaja 2. i 3. traga je bitna kako proces traženja budućih prijelaza ne bi trajao 
+        predugo.,
+        
+        \item Sada se $T_4$ nalazi u stanju koje odgovara znaku koji $M$ čita nakon upravo simuliranog koraka. Stanje u kojem se $M$ nalazi nakon upravo simuliranog koraka nalazi se na početku riječi 3. trake, 
+        \item Ako na 2. tragu nije zapisana 0, idi na 1. U suprotnome stani.
+    \end{itemize}
+     Simulacija jednog koraka stroja $M$ je složenosti\newline $O(d^3) + O(log_2(f(n))) + O\left (log_2(f(n))+d \right ) + O(1)$ $= O(log_2(f(n)))$.
+    \item Ukoliko je $M$ prihvatio ulaz, definira se da $T_4$ prihvaća ulaz,
+    ukoliko $M$ ne prihvaća ulaz ili u $\left \lceil{\frac {f(n)}{log_2(f(n))} }\right \rceil$ koraka još nije stao, definira se da
+    $T_4$ ne prihvaća ulaz.
+\end{enumerate}
+
+Budući da se izvršava simulacija samo prvih $\left \lceil{\frac {f(n)}{log_2(f(n))} }\right \rceil$ koraka stroja $M$, stroj $T_4$ je složenosti $O \left (n + f(n) + \left \lceil{\frac {f(n)}{log_2(f(n))} }\right \rceil \cdot log_2(f(n)) \right ) = O(f(n))$.
+
+\end{proof}
+Gornjom lema pokazuje kako simulacija samo $\left \lceil{\frac {f(n)}{log_2(f(n))} }\right \rceil$ koraka proizvoljnog stroja $M$ s ulazom
+$\left< M \right>01^*$ ne traje predugo, tj. ne više od $O(f(n))$.
+
+\vspace{1cm}
+Sada je sve spremno za dokaz teorema \ref{timehierarhy} o vremenskoj hijerarhiji koji 
+slijedi.
+
+\begin{proof}
+Dokaz teorema provodi se u 2 faze:
+\begin{enumerate}
+    \item Konstrukcija Turingovog stroj $D$ koji radi u vremenu 
+\textbf{L} $\in DTIME(f\left ( n \right ) )$, određivanje ulaza za $D$ i definiranje 
+\textbf{L} $:= L(D)$.
+    \item Dokaz kako $L(D)$ nije moguće odlučiti u 
+vremenu $o(\frac {f\left ( n \right )}{log_2\left ( f\left ( n \right ) \right )} )$. Koristi se postupak dijagonalizacije.
+\end{enumerate} 
+
+\underline{\textit{Faza 1}}\newline
+Turingov stroj $D$ definira se koristeći prije definirane strojeve $T_1$, $T_2$, $T_3$ i $T_4$. 
+$D$ ima jednu traku, a 
+ona ima 3 traga. Pretpostavlja sa kako su na početku rada stroja svi tragovi osim prvoga prazni.
+Prvi trag sadrži ulaznu riječ, a glava stroja se nalazi na poziciji koja omogućava čitanje
+početnog simbola te riječi.
+
+Stroj $D$ prihvaća ulaze oblika $ w = \left < M \right >01^*$, ali ne sve. 
+Kako bi odredio koje riječi zadanog oblika će odbiti, a koje prihvatiti, $D$ simulira $\left \lceil{\frac {f(n)}{log_2(f(n))} }\right \rceil$ koraka stroja $M$ s ulazom $w$.
+Stroj $D$ odbija ulaz $w$ ako i samo ako $M$ prihvaća ulaz $w$ u manje od $\left \lceil{\frac {f(n)}{log_2(f(n))} }\right \rceil$ koraka.
+
+Upravo ovakva definicija prihvaćanja stroja $D$ je ključna za \textit{Fazu 2} jer dovodi do odbacivanja mogućnosti odlučivanja
+$L(D)$ u vremenu $o \left (\frac{ f(n)}{log_2(f(n)) } \right )$.
+\vspace{.5cm}
+
+Slijedi formalniji opis rada stroja $D$:\newline
+$D$ := \textit{"na ulazu se nalazi riječ $w$, n := $ \left |w \right |$"} 
+\begin{enumerate}
+    \item Provjeri je li $w$ oblika $\left < M \right >10^*$ gdje je $M$ neki Turingov stroj. Ako $w$ nije spomenutog oblika,
+        definira se da $D$ odbija ulaz. Provjera valjanosti ulaza je složenosti $O(n)$.
+    \item Prepiše ulaz na 2. trag što je složenosti $O(n)$.
+           
+    \item Izvede $T_1$ na 2. tragu.\newline
+    Završetkom rada stroja $T_1$, jedino je sadržaj 2. traga promjenjen. Složenost izvedbe stroja $T_1$ je $O(n)$ prema lemi \ref{lemma:t1}.
+    Na 2. tragu se sada nalazi unarni zapis od $n$, BSOMP $1^n$.
+    
+    \item Izvede $T_2$ 
+    pa $T_3$ na 2. tragu\label{korak13}.\newline
+     Izvedba $T_2$ je vremenske složenosti $O(f(n))$ jer je $T_2$ vremenske 
+    složenosti $O(f(n))$ za ulaz $1^n$. 
+    Prije pokretanja stroja $T_3$, na drugom tragu se nalazi binarni zapis riječi $f \left (n \right )$. 
+    Prema lemi \ref{lemma:t3}, $T_3$ za ulaz $f(n)$ u binarnom obliku, radi najviše $O(f(n))$ koraka.
+    Zadaća stroja $T_3$ je zapisati početnu vrijednost brojača stroja $D$ na 2.trag. 
+    
+    \item Postavi glavu stroja na poziciju koja odgovara početku zapisane riječi na 2. tragu što je složenosti $O(n)$.
+    \item Izvede $T_4$.\newline
+     Izvedba $T_4$ je vremenske složenosti $O \left ( \left \lceil{\frac{ f(n)}{log_2(f(n))} }\right \rceil  log_2(f(n)) \right ) = O \left (f(n) \right )$ prema lemi \ref{lemma:t4}.
+    
+    \item Ako $T_4$ ($M$ u $ \left \lceil{\frac{ f(n)}{log_2(f(n))} }\right \rceil $ koraka) prihvati ulaz $w$, definira se da $D$ ne prihvaća ulaz. Ukoliko $T_4$ ne prihvati ulaz $w$ ($M$ u $ \left \lceil{\frac{ f(n)}{log_2(f(n))} }\right \rceil $ koraka ne prihvati ulaz $w$ ili uopće ne stane), definira se da $D$ prihvaća ulaz $w$.
+\end{enumerate}
+
+Primjetimo kako se u koraku  6 opisa rada stroja, simulira samo prvih $ \left ( \left \lceil{\frac{ f(n)}{log_2(f(n))} }\right \rceil \right )$ koraka 
+rada stroja $M$ s ulazom $w$. 
+
+Zaključno, $D$ je vremenske složenosti $O \left (n+n+f(n)+n+f(n)+1 \right ) = O \left (f(n) \right )$. Naime, po definiciji vremenski konstruktibilne funkcije vrijedi\newline $f(n) \geq O \left (n \cdot log_2 \left ( n \right ) \right ) $.
+Definiramo \textbf{L}$:= L(D)$.
+
+\vspace{1cm}
+\underline{\textit{Faza 2}}\newline
+Cilje ove faze je dokazati kako \textbf{L} nije moguće odlučiti u 
+vremenu $o\left (\frac {f\left ( n \right )}{log_2\left ( f\left ( n \right ) \right )} \right )$.\newline
+Dokaz se provodi svođenjem na kontradikciju. Pretpostavimo suprotno, tj.
+ \textbf{L} je moguće odlučiti u 
+ vremenu $o\left (\frac {f\left ( n \right )}{log_2\left ( f\left ( n \right ) \right )} \right )$.
+\newline
+Tada postoji Turingov stroj $N$ koji odlučuje $L(D)$ vremenske složenosti $g(n) = o \left( \left \lceil{ \frac{f(n)}{log_2(f(n))} }\right \rceil \right )$.
+Budući da je \newline $g(n) = o \left( \left \lceil{ \frac{f(n)}{log_2(f(n))} }\right \rceil \right )$, tada $ \lim_{n \to \infty} \frac{g(n)}{\frac {f\left ( n \right )}{log_2\left ( f\left ( n \right ) \right )}}  = 0$. \newline
+Po definiciji limesa funkcije, 
+za svaki $\epsilon > 0, \exists n_0 \in \mathbb{N}$  \newline t.d. $\forall n \in \mathbb{N}, n > n_0$ 
+$\left |\frac{g(n)}{\frac {f\left ( n \right )}{log_2\left ( f\left ( n \right ) \right )}} \right | < \epsilon$.\newline
+Neka je sada $\epsilon = 1$ i $n_{d} \in \mathbb{N}$ takav da  $\forall n \in \mathbb{N}, n > n_d$ 
+$\left |\frac{g(n)}{\frac {f\left ( n \right )}{log_2\left ( f\left ( n \right ) \right )}} \right | < 1$,
+tj. $g(n) < \frac {f\left ( n \right )}{log_2\left ( f\left ( n \right ) \right )}$. 
+
+Stroj $N$ s ulazom $w = \left < N \right >10^{n_N}$, $n_N > n_d$, završava u najviše $g(n), n = \left | w \right |$, koraka. Stroj $D$ 
+za ulaz $w$
+simulira prvih $\left \lceil \frac {f\left ( n \right )}{log_2\left ( f\left ( n \right ) \right )}\right \rceil$ koraka stroja $N$. Kako je 
+$n > n_d$ vrijedi $g(n) < \frac {f\left ( n \right )}{log_2\left ( f\left ( n \right ) \right )}$. Dakle, $D$ za
+ulaz oblika $w$ izvršava simulaciju stroja $N$ s ulazom $w$ do kraja. 
+\newline
+
+Neka je sada $w = \left < N \right >10^{n_N}$ ulaz za $D$.\newline
+Ukoliko $D$ prihvati ulaz tada $w \in L(D)$. Ali, prema definiciji rada stroja $D$ i jer se simulacija od $N$ izvrši do kraja,  
+stroj $N$ odbija ulaz $w$. Kako $N$ odlučuje $L(D)$, vrijedi $w \notin L(D)$ čime dobivamo kontradikciju.\newline
+Ukoliko $D$ odbije ulaz tada $w \notin L(D)$. Prema definiciji rada stroja $D$ i jer se simulacija od $N$ izvrši do kraja,  
+stroj $N$ prihvaća ulaz $w$ pa $w\in L(D)$ što je u kontradikciji s $w \notin L(D)$.\newline
+Zaključno, $N$ ne odlučuje $L(D)$ što je u kontradikciji s polaznom pretpostavkom
+pa $L(D)$ nije odlučiv u $o \left (\frac {f\left ( n \right )}{log_2\left ( f\left ( n \right ) \right )} \right )$.
+\end{proof}
+\vspace{1cm}
+Za kraj, promotrimo detalj leme \ref{lemma:t4}.
+Prilikom definiranja složenosti stroja $T_4$, pretpostavka o vremenskoj složenosti koraka simulacije nije u potpunosti razjašnjena. Za ulaz $w = \left < M \right >01^*$, pretpostavlja se da je duljina koda stroja $M$, u oznaci $d$, konstantna.
+Ipak, k\^{o}d stroja $M$ je dio ulaza za $T_4$ i mijenja se u odnosu na ulaznu riječ, a time i njegova duljina. 
+Budući da
+su jedini mogući ulazi koje $D$ prihvaća oblika $\left < M \right >01^*$ pa $d < n$, može se zahtjevati da $d$ bude dovoljno mali u odnosu na $n$ kako bi se ostvarilo $d^3 \leq log_2(f(n))$. Za takve ulaze, složenost stroja $T_4$ ostaje dovoljno mala pa se ne narušava složenost stroja $D$ ni njegova primjena u \textit{Fazi 2}.
+U tu svrhu uvodimo proširenje provjere ispravnosti ulaza stroja $D$.
+Nadopuna provjere ispravnosti ulaza stroja $D$ izvršava se nakon 
+izvedbe stroja $T_2$, u sklopu koraka 4 opisa rada stroja. U tom trenutku, na
+2. tragu stroja $D$ sadrži binarni zapis broja $f(n)$ i lako ga je usporediti
+s $d^3$. Ukoliko $d^3 > log_2 \left ( f(n) \right ) $, definira se da $D$ odbija ulaz.
+Kako je $d^3$ moguće izračunati u $O(f(n))$ prema lemi u nastavku, nadopuna provjere ispravnosti ulaza ne 
+povećava vremensku složenost stroja $D$ iznad $O(f(n))$.\newline
+
+
+
+
+%Veličina $d$ nije konstantna za svaki ulaz $w = \left < M \right >01^*$ , već ovisi o dijelu ulaza, tj. o duljini $\left < M \right>$. Također, nije u potpunosti 
+%ispravno pretpostaviti da je duljina koda za $M$ ograničene duljine. Na primjer, za proizvoljan M, dodavanjem jednog novog stanja i jednog prijelaza dobivamo $M'$
+%čija duljina koda je strogo veća od koda za $M$ jer sadrži više informacija.
+%\newline
+%Predlaže se smanjivanje na broj koraka stroja $M$ koje će $D$ simulirati s $k = \left \lceil{ f(n)/log_2(f(n)) }\right \rceil $ na $k = \left \lceil{ \frac{ 
+%f(n)}{|\left < M \right >|^3+log_2(f(n)) }}\right \rceil $\cite{so1}. Kako bi takva modifikacije bila korektna,
+%potrebno je: (1) pokazati kako vrijeme simulacije $k$ koraka vremenske složenosti najviše $O(f(n))$,
+%(2) da je $\left \lceil{ \frac{ 
+%f(n)}{|\left < M \right >|^3+log_2(f(n)) }}\right \rceil $ moguće izračunati u vremenskoj složenosti $O(f(n))$.
+%Slijedi dokaz prve tvrdnje:
+%\begin{lemma}[Modifikacija leme 1.5]
+%Neka je M Turingov stroj nad abecedom $\Sigma = \{0,1\}$, $\left < M \right >$ njegov kod u abecedi $\Sigma $ i $f: \mathbb{N} \to \mathbb{N}$, vremenski konstruktibilna funkcija.
+%Postoji 3-tragovni Turingov stroj $T_4$ koji za ulaz $w \in \Sigma^*$, $w = \left < M \right >01^r$ na prvom tragu i $k = \left \lceil{ \frac{ 
+%f(n)}{|\left < M \right >|^3+log_2(f(n)) }}\right \rceil$ na 2. tragu u binarnom zapisu, simulaira k koraka rada stroja $M$ s ulazom $\left < M \right >01^r$ u vremenu $O(f(n))$, $r >= |\left < M \right >|^2$.
+%\end{lemma}
+%\begin{proof}
+%Dokaz je analogan dokazu leme \ref{lemma:t4} samo što prilikom analize vremenske složenosti stroja $T_4$ $d$-ovi dobivaju na značajnosti, ne zanemaruju se kao konstante prilikom korištenja $O$ notacije.
+%
+%Prije početka same simulacije, prepisivanjem funkcije prijelaza na 3. trag 
+%troši se $O(n)$ koraka, pomicanjem sadržaja tragova 2. i 3. tako da početak riječi na 
+%svim tragovima bude jedan ispod drugoga troši se $O(f(n) + d^2)$ koraka. Budući da se u iskazu leme zahtjeva da je duljina ulaza veća ili jednaka $d^2$, slijedi da je 
+%složenost početnog pomicanja zapisa na 2. i 3. tragu jednaka $O(f(n) + n) = O(f(n))$. 
+%Nadalje, svaki korak simulacije u 3 vremenske je složenosti $O(d^3)$ $+ O(log_2(f(n)))$ + $O(log_2(f(n))+d)$ + O(1) $= O(d^3 + log_2(f(n)))$.
+%
+%Budući da se izvrši simulacija samo prvih $\left \lceil{ f(n)/log_2(f(n)) }\right \rceil$ stroj $M$, stroj $T_4$ je složenosti $O(f(n) + f(n)/(d^3 + log_2(f(n))) * (d^3 + log_2(f(n)))) = O(f(n))$.
+%
+%\end{proof}
+%Nakon dokaza gornje leme, uočava se kako je uz (1) i (2), potrebno promijeniti i jezik koji će $D$ prepoznavati, tako da
+%prilikom provjere ispravnosti ulaza, $D$ nastavlja s radom samo za 
+%ulaze oblika $\left < M \right >01^r$, $r >= |M|^2$, dok ostale odbija.
+%Također, prilikom \underline{$Faze$ $2$} dokaza teorema, riječ $w = \left < N \right >01^l$ koja
+% dovodi do kontradikcije odabiremo tako da ne vrijedi samo $l > n_d$ nego i $l > |\left < N \right >|^2$, tj. $l = \max \left ( n_d, |\left < N \right >|^2 \right )+1$.
+%
+%Još je ostalo dokazati (2), tj. izračun od $\left \lceil{ \frac{ 
+%f(n)}{|M|^3+log_2(f(n)) }}\right \rceil $ moguće napraviti u najviše $O(f(n))$ koraka.
+
+\begin{lemma}
+Postoji 3-tragovni Turingov stroj $T$ 
+%T_31
+ koji za ulaz $d$ u binarnom zapisu na 1. tragu (dok su ostali prazni), izračunava
+$d^3$ u binarnom zapisu i njegova je vremenska složenost $O(dlog_2(d))$.
+\end{lemma}
+
+\begin{proof}
+
+$T$ definiramo da radi sljedeće:
+\begin{enumerate}
+    \item Prepiše $d$ na 2. i 3. trag\newline.
+    Izvršava se jednim prolaskom po riječi na 1. tragu. Ono što glava čita na 1. tragu prepisuje se na 2. i 3. trag. Ovaj korak je složenosti $O(log_2(d))$. U ovom trenutku krajevi riječi na svim tragovim su poravnati.
+    \item Pribroji broj na 3. trag broju na 1. tragu 
+    \newline
+    Budući da su krajevi riječi na 3. i 1. tragu jedan ispod drugoga, zbrajanje je moguće izvršiti u vremenu $O(log_2(d))$ jedim prolazom po riječi na ulazu. 
+    Zbrajanje je linearno u duljini riječi koje se zbrajaju.
+    \label{korak22}
+    \item Oduzme 1 broju na 2. tragu\label{korak23}.\newline
+    Primijetimo kako se ponavljanjem koraka opisa rada stroja \ref{korak22} i 
+    \ref{korak23} duljina riječi na 3. tragu ne mijenja, a na 1. tragu se najviše udvostruči ($log_2(d^2) = 2log_2(d)$) što ne mijenja klasu vremenske složenosti od \ref{korak22}.
+    Složenost od \ref{korak23} je složenost oduzimanja 2 broja duljina $O(d)$, tj. $O(log_2(d))$.
+
+    \item Ako broj na 2. tragu nije nula, ide na \ref{korak22} \label{korak24}.\newline
+    Provjera je složenosti najviše $O(log_2(n))$. Specijalan slučaj predstavlja situacija kada se glava stroja nalazi na kraju riječi. Tada se 
+    složenost smanjuje na $O(1)$.
+    
+    \item Prepiše riječ na 3. tragu na 2. trag \label{korak25}. \newline
+    Složenost je $log_2(d) = O(log_2(d))$. 
+    
+    \item Prepiše riječ na 1. tragu na 3. trag  \label{korak26}\newline
+    što je složenosti je $log_2(d^2) = 2log_2(d) = O(log_2(d))$.
+    
+    
+    \item Pribroji broj na 3. trag broju na 1. tragu \label{korak27},
+    \item Oduzme 1 broju na 2. tragu što je složenoati $O(log_2(d))$.\label{korak28},
+    \item Ako je broj na 2. tragu nije nula, ide na \ref{korak27}. U suprotnome staje. \label{korak29}
+\end{enumerate}
+Složenosti od \ref{korak27}, \ref{korak28} i \ref{korak29} su analogne složenostima
+od \ref{korak22}, \ref{korak23} i \ref{korak24} jer veličina zapisa brojeva na svim tragovima nikada ne prelazi $O(log_2(d))$. Maksimum postiže na 1. tragu kada je $log_2(d^3) = 3log_2(d)$.
+
+Budući da se prije prve izvedbe koraka \ref{korak22} ili \ref{korak27},
+na 2. tragu nalazi binarni zapis od $d$, \ref{korak22}, \ref{korak23} i \ref{korak24} i \ref{korak27}, \ref{korak28} i \ref{korak29} se ponavljaju točno $d$
+puta. Dakle, složenost upravo opisanog stroja je $O(log_2(d)) + d \cdot O(log_2(d) + log_2(d) + log_2(d)) + O(log_2(d)) + O(log_2(d)) + d \cdot O(log_2(d) + log_2(d) + log_2(d))$ = $O(d \cdot log_2(d))$.
+
+\end{proof}
+S $T''$ definiramo jednotragovni Turingov stroj ekvivalentan stroju $T$ nastao redukcijom 
+višetragovnog Turingovog stroja na jednotragovni abecede $\left\{ 0,1,\sqcup \right \}$. 
+Dakle, složenost od $T''$ je također $O(d \cdot log_2(d))$ i za ulaz $d$ stroj izračunava $d^3$. Dakle, $T''$ možemo koristiti u nadopuni ispravnosti ulaza stroja $D$ za izračun $d^3$. Korištenje $T''$ ne povećava vremansku složenost stroja $D$.
+
+Kako bi dokaz teorema \ref{timehierarhy} o vremenskoj hijerarhiji bio u potpunosti u skladu s
+uvedenom modifikacijom, u \textit{Fazi 2} zahtjevamo da $n_N$ mora biti veći i od $\left | N \right |^3$.
+
+%\begin{lemma}
+%Postoji 3-tragovni Turingov stroj $T_{311}$  koji izračunava binarni zapis od $\left \lceil{ \frac{ 
+%f(n)}{|\left < M \right >|^3+log_2(f(n)) }}\right \rceil$ za ulaz $w = \left < M \right >10^*$ na 1. tragu i $f(n)$ u binarnom zapisu na 2. tragu, gdje je 
+%$f: \mathbb{N} \to \mathbb{N}$ vremenski konstruktibilna funkcija i $n = |w|$.
+%Nakon rada stroja binarni zapis od $\left \lceil{ \frac{ 
+%f(n)}{|\left < M \right >|^3+log_2(f(n)) }}\right \rceil$ je zapisan na 2. tragu, dok je 1. i 3. trag ostao
+%nepromijenjen.
+%\end{lemma}
+%\begin{proof}
+%Na početku rada stroja, pretpostavlja se kako su riječi na 1. i 2. tragu
+%zapisane jedna ispod druge. Također, neka je $d := |\left < M \right >|$ i
+%pretpostavlja se da su zapisi brojeva na svim tragovima binarni.
+%
+%Prvo definiramo stroj $T$ s 5 tragova čija će redukcija na 3 traga predstavljati stroj $T_{311}$\newline.
+%Slijedi opis rada stroja $T$:
+%\begin{enumerate}
+%    \item Prođi po riječi na 1. tragu od kraja prema početku, preskačući sve slijedne 0, zatim jednu 1, inicijaliziraj 3. trag na 0, i za svaki sljedeći znak na 1. tragu povećaj broj na 3. tragu za 1 \label{korak31},
+%    \item Izvedi $T_31$ na 3. tragu\label{korak32},
+%    \item Pomakni sadržaj  3. traga tako da kraj riječi na 3. tragu odgovara kraju riječi na 2. tragu\label{korak33},
+%    \item Prođi jednom po riječi na 2. tragu, za neprazan znak, dodaj 
+%    broju na 3. tragu 1 \label{korak34},
+%    \item \label{korak35} Podijeli broj na 2. tragu s brojem na 3. tragu koristeći algoritam korišten u \ref{lemma:t3} i koristeći tragove 2, 3, 4, 5 ,
+%    \item Očisti 2., 3., 4., trag,
+%    \item Prepiši sadržaj 5. traga na 2.,
+%    \item Očisti 5. trag.
+%\end{enumerate}
+%
+%Korak \ref{korak31} je složenosti $O(n + (3d)\cdot log_2(d))$. Budući da je d < n, složenost ne prelazi $O(nlog_2(n))$ pa ni $O(f(n))$.
+%
+%Korak \ref{korak32} opisa rada stroja je složenosti $O(d\cdot log_2(d))$ pa ne prelazi $O(f(n))$.
+%
+%Korak \ref{korak33} je složenosti što ne prelazi $O(f(n))$. Potrebno pomaknuti binarni zapis broja $d$, duljine $log_2(d)$, na 3. tragu tako da mu se kraj podudara s riječi na 
+%2. tragu. Budući da pretpostavljamo kako su riječi na 1. i 2. tragu zapisane jedna ispod druge, potrebno je $log_2(d)$ znakova pomaknuti za najviše $max(log_2(f(n)),n)$ mjesta što zahtjeva najviše $log_2(d)log_2(f(n))$ ili $nlog_2(d)$ vremenske složenosti (koraka rada stroja).
+%Budući da je $f(n) \geq nlog_2(n)$ i $log_2(n) \geq log_2(d)$, $nlog_2(d) = O(f(n))$.
+%Neka je sada $l:=log_2(f(n))$, tada je $f(n) = 2^l$. Kako je $log_2(f(n)) \geq log_2(n)log_2(log_2(n)) \geq log_2(n) \geq log_2(d)$, $log_2(d)log_2(f(n)) \leq (log_2(f(n)))^2 = l^2$. Općenito vrijedi $l^2 = O(2^l)$ pa i $(log_2(f(n)))^2 = O(f(n))$.
+%
+
+%Korak \ref{korak34} provodi zbrajanje 2 binarna broja $log_2(f(n))$ puta pa je
+%njegova složenost $O((log_2(f(n)))^2)$ što ne prelazi $O(f(n))$.
+%
+%Korak 5 opisa rada stroja je najviše složenosti $O(f(n))$ nakon kojega se ne na 5. tragu 
+%stroja nalazi rezultat izračunavanja.
+%
+%Složenosti zadnja 3 koraka opisa algoritma ne prelaze $O(f(n))$ jer prethodni koraci ne
+%prelaze složenost $O(f(n))$ pa stroj nije mogao pristupiti više od $O(f(n))$ registara.
+%Dakle, složenost stroja $T$ je $O(f(n))$.
+%
+%Definiramo $T_{311}$ nastao redukcijom stroja $T$ spajanjem zadnja 3 traga. Poznato je kako je takvu redukciju moguće izvršiti tako da se složenost novonastalog stroja ne
+%poveća u smislu $O$ notacije.
+%
+%$T_{311}$ je traženi stroj složenosti $O(f(n))$.
+%\end{proof}
+%
+%Na kraju, potrebno je još promijeniti korak \ref{korak13} u teoremu \ref{timehierarhy},
+%na način da se izvede prvo $T_2$ na 2. tragu, pa zatim $T_{311}$ iz gornje leme na 1. i 2. tragu ne mijenjajući 1. trag i zapisujući vrijednost $\left \lceil{ \frac{ 
+%f(n)}{|M|^3+log_2(f(n)) }}\right \rceil$ u binarnom obliku na 2. trag stroja $D$.
+
+\section{Popis literature}
+\renewcommand{\refname}{}
+\bibliographystyle{alpha}
+\bibliography{references}
+\end{otherlanguage}
+\end{document}
