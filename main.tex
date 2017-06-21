@@ -10,7 +10,65 @@
 \newtheorem{remark}{Napomena}[section]
 
 \usepackage{amsfonts}
+\usepackage{subfig}
+\usepackage{verbatim}
+%% Code from chords.sty
+% Counters
+\newcounter{chords-string}
+\newcounter{chords-fret}
 
+% Variables
+\newcommand{\chordreset}{
+	\def\chordtuning{5,4,3,2,1}
+	\def\names{x}
+	\def\chordfretstart{1}
+	\def\chordfretend{4}
+}
+\chordreset
+
+\newenvironment{chord}
+{
+	% A single note
+	% \single <string> <fret> <finger>
+	\newcommand{\single}[3]{
+		\draw node[single] at (##1,##2) {##3};
+	}
+	% A bar
+	% \bar <startstring> <fret> <finger>
+	\renewcommand{\bar}[3]{
+		\draw[bar] (##1,##2) -- node[midway] {##3} (1,##2);
+	}
+	% No strike
+	% \nostrike <string>
+	\newcommand{\nostrike}[1]{
+		\draw[nostrike] (##1,\chordfretstart-.5) +(-135:.2cm) -- +(45:.2cm);
+		\draw[nostrike] (##1,\chordfretstart-.5) +(135:.2cm) -- +(-45:.2cm);
+	}
+	\begin{tikzpicture}[
+	single/.style={draw,circle,fill=white},
+	bar/.style={cap=round,double,double distance=18pt},
+	nostrike/.style={line width=.8mm},
+	cm={0,-0.8,1,0,(0,0)}
+	]
+	\setcounter{chords-string}{6}
+	\foreach \tuning in \chordtuning
+	{
+		\draw[xshift=-0.5cm] node at (\value{chords-string},\chordfretstart-1) {\tuning};
+		\addtocounter{chords-string}{-1}
+	}
+	\draw[yshift=-0.5cm] (1,\chordfretstart) grid (6,\chordfretend+1);
+	
+	
+	\foreach \name in \names
+	{	
+		\draw node at (0,2) {\name};
+	}
+}
+{
+	\end{tikzpicture}
+}
+
+%% End of chords.sty file
 
 
 \title{Složenost algoritama}
@@ -129,16 +187,54 @@ Neka je $k\in \mathbb{N}$.
 
 Pretpostavljamo kako  $\left ( \Gamma_1, \Gamma_2, \hdots, \Gamma_k \right ) $ sadrži jedan istaknuti simbol $\sqcup$ koji nazivamo "prazan znak".
 Poistovjećujemo $\alpha \in \Sigma$ s $\left ( \alpha, \sqcup, \hdots, \sqcup \right )$ i smatramo $\Sigma \subset \Gamma$ i pretpostavljamo kako se ulazna riječ, uvijek nalazi na 1. tragu.
+Na početku rada stroja, pretpostavljamo kako se glava stroja nalazi na poziciji koja omogućava pristup registru početnog znaka ulazne riječi. Na taj način se istovremeno pristupa registrima ostalih tragova koji se nalaze točno ispod početka ulazne riječi.
 \end{definition}
 
 TS s više tragova možemo zamišljati kao TS s jednom trakom koja se sastoji $k > 1$ redova (tragova). Svaki od redova
 ima svoju abecedu, $\Gamma_i$. U ovom slučaju, $\Gamma_i$ = $\{0,1, \sqcup\}$. 
 Svaka ćelija zapravo stupac.
-TS može čitati i pisati po svakom redu posebno, ali još uvijek postoji samo jedna glava za čitanje i pisanje, jedna pozicija.
+TS može čitati i pisati po svakom redu posebno, ali još uvijek postoji samo jedna glava za čitanje i pisanje, jedna pozicija (Slika \ref{fig:1}) \cite{multitrack1,multitrack2}.
+	
+	\begin{figure}[H]
+		\subfloat[Na početku prijelaza]{
+			\begin{chord}
+				\bar 6 2 G    % bar from 6th string down with index finger on 1st fret
+			\end{chord}
+			\chordreset}
+		%
+		\subfloat[Nakon prijelaza s pomakom ulijevo]{
+			\centering
+			\begin{chord}
+				\bar 6 1 G    % bar from 6th string down with index finger on 1st fret
+			\end{chord}
+			\chordreset}
+	\end{figure}
+	
+	\begin{figure}[H]
+		%
+		\subfloat[Nakon prijelaza bez pomaka glave]{
+			\centering
+			\begin{chord}
+				\bar 6 2 G
+			\end{chord}
+			\chordreset}
+		%
+		\subfloat[Nakon prijelaza s pomakom udesno]{
+			\centering
+			\begin{chord}
+				\bar 6 3 G
+			\end{chord}
+			\chordreset}
+		\caption{Pomak glave Turingovog stroja s jednom trakom i pet tragova u jednom prijelazu. Vertikalna linija označena s $G$ predstavlja glavu stroja.}
+		\label{fig:1}
+	\end{figure}
+
+
+
 Vašno svojstvo višetragovnog TS-a je da redukcija višetragovnog TS-a na jednotragovni povećava vremensku složenost samo  za konstantni faktor.
 \begin{theorem}[Redukcija višetragovnog Turingovog stroja na jednotragovni \cite{sipser2006_2,hart1968}]
-Neka je $f:\mathbb{N} \to \mathbb{N}$.
-Za svaki k-tragovni TS $K$, vremenske složenosti $f(n)$. Tada postoji jednotragovni TS $K'$ vremenske složenosti $d\cdot f(n)$, $d \in \mathbb{R^+}$, koji mu je ekvivalentan.
+Neka je $f:\mathbb{N} \to \mathbb{N}$, $k \in \mathbb{N}$.\newline
+Za svaki k-tragovni TS $K$ vremenske složenosti $f(n)$ postoji jednotragovni TS $K'$ vremenske složenosti $d\cdot f(n)$, $d \in \mathbb{R^+}$, koji mu je ekvivalentan.
 \end{theorem}
 
 Kažemo da je $K'$ nastao redukcijom višetragovnog TS-a $K$ na jednotragovni.
@@ -218,29 +314,29 @@ mora biti u mogućnosti izračunati. Također, potrebno je zahtjevati da vremens
 njezinog izračunavanja ne prelazi $O(f(n))$. Ukoliko izračun početne vrijednosti brojača prelazi 
 $O(f(n))$, sveukupna vremenska složenosti stroja $D$ prelazi dopuštenu granicu.
 
-Da je gornji zahtjev moguće ostvriti dokazuje sljedeća Lema \ref{lemma:t3} za $t=f(n)$ .
-\begin{lemma}\label{lemma:t3}
-Postoji Turingov stroj $T_3$ vremenske složenosti najviše $O(2^n) = O(t)$ koji za ulaz \textbf{t}, $n = log_2(t)$, izračunava $\left \lceil{ t/log_2(t) }\right \rceil$ u binarnom zapisu. 
+Da je gornji zahtjev moguće ostvriti dokazuje sljedeća Lema \ref{lemma:t3} za $n=f(n)$ .
+\begin{lemma}\label{lemma:t3}	
+Postoji Turingov stroj $T_3$ koji za ulaz \textbf{n} izračunava binarni zapis od $\left \lceil{ n/log_2(n) }\right \rceil$ u vremenu $O(n)$.  
 \end{lemma}
 \begin{proof}
-Ulazna abeceda stroja je jednaka $\{0,1\}$ pa koristeći \textbf{t} za argument matematičkih funkcija, interpretiramo ga kao broj u binarnom zapisu. 	
+Ulazna abeceda stroja je jednaka $\{0,1\}$ pa koristeći \textbf{n} za argument matematičkih funkcija, interpretiramo ga kao broj u binarnom zapisu. 	
 
 Definicija željenog stroja je sljedeća.
 Prvo se definira stroj $T$ s 4 traga.
 Prva 3 traga koriste za dijeljenje, dok se 4. koristi za čuvanje rezultata dijeljenja. 4. trag je izlazni trag stroja. 
-Na početku rada stroja, na prvom tragu se nalazi ulazna riječ $t$. \newline
+Na početku rada stroja, na prvom tragu se nalazi ulazna riječ $n$. \newline
 Za vrijeme rada, stroj $T$ radi sljedeće:
 \begin{enumerate}
-    \item Prepiše ulaz na 2. trag što je složenosti $O(n)$ i ostavi glavu za čitanje i pisanje na kraju ulazne riječi,
+    \item Prepiše ulaz na 2. trag što je složenosti $O(log_2(n))$ i ostavi glavu za čitanje i pisanje na kraju ulazne riječi,
     
-    \item Na drugom tragu zapiše duljinu ulaza u binarnom obliku tako da kraj riječi na 2. tragu odgovara kraju riječi na 1. tragu što je složenosti $O(n)$.
+    \item Na drugom tragu zapiše duljinu ulaza u binarnom obliku tako da kraj riječi na 2. tragu odgovara kraju riječi na 1. tragu što je složenosti $O(log_2(n))$.
     Na drugom tragu se sada nalazi
-    najviše $\left \lceil{log_2(n)}\right \rceil$  znakova.,
-    \item U ravnini zadnjeg znaka riječi na 1. tragu na 4. trag zapiše $0$. To je najviše $O(n)$ koraka.
-    \item Dok god je zadnjih $\left \lceil{log_2(n)}\right \rceil$ znakova na 1. tragu manje od zapisa na 2. tragu:
+    najviše $\left \lceil{log_2(log_2(n))}\right \rceil$  znakova.,
+    \item U ravnini zadnjeg znaka riječi na 1. tragu na 4. trag zapiše $0$. To je najviše $O(log_2(n))$ koraka.
+    \item Dok god je zadnjih $\left \lceil{log_2(log_2(n))}\right \rceil$ znakova na 1. tragu manje od zapisa na 2. tragu:
     \begin{enumerate}
-        \item pozicionira se na kraj riječi na 1. tragu (indirektno i na 2.) što je složenosti O(n),
-        \item oduzme 2. trag od 1. zapisujući rezultat na 3. trag. Složenost je jedan prolaz po riječi na 1. tragu, tj. $O(n)$,
+        \item pozicionira se na kraj riječi na 1. tragu (indirektno i na 2.) što je složenosti $O(log_2(n))$,
+        \item oduzme 2. trag od 1. zapisujući rezultat na 3. trag. Složenost je jedan prolaz po riječi na 1. tragu, tj. $O(log_2(n))$,
         \item obriše riječ na 1. tragu,
         %($O(n)$ - jedan prolaz od kraja do početka),
         \item prepiše riječ s 3. traga na 1. trag, 
@@ -248,14 +344,14 @@ Za vrijeme rada, stroj $T$ radi sljedeće:
         \item broj zapisan na 4. tragu poveća za 1, 
         %(gornja ograda je $O(n)$).
     \end{enumerate}
-    \item U ovom trenutku, na 4. tragu se nalazi rezultat željenog dijeljenja. Ukoliko se na 1. tragu nalazi broj različit od 0, povećaj broj na 4. tragu za 1. Gornja ograda složenosti ovoga koraka je $O(n)$.
+    \item U ovom trenutku, na 4. tragu se nalazi rezultat željenog dijeljenja. Ukoliko se na 1. tragu nalazi broj različit od 0, povećaj broj na 4. tragu za 1. Gornja ograda složenosti ovoga koraka je $O(log_2(n))$.
 \end{enumerate}
-Svi koraci, osim koraka 4 opisa rada stroja su složenosti najviše $O(n)$.
-Provjera uvjeta prilikom ponavljanja koraka 4 je složenosti $O(n)$, dok
-u svakom ponavljanju koraka 4, svaki podkorak ima složenost $O(n)$. Korak 4 se ponavlja
-najviše $\frac{t}{n}$ puta, gdje je t = $2^n$. 
+Svi koraci, osim koraka 4 opisa rada stroja su složenosti najviše $O(log_2(n))$.
+Provjera uvjeta prilikom ponavljanja koraka 4 je složenosti $O(log_2(n))$, dok
+u svakom ponavljanju koraka 4, svaki podkorak ima složenost $O(log_2(n))$. Korak 4 se ponavlja
+najviše $\frac{n}{log_2(n)}$ puta. 
 
-Dakle, složenost stroja $T$ je $O(n+n+n+(2^n/n)(n+n+n+n)+n) = O(2^n)$. 
+Dakle, složenost stroja $T$ je $O(log_2(n)+log_2(n)+log_2(n)+(n/log_2(n))(log_2(n)+log_2(n)+log_2(n)+log_2(n))+log_2(n)) = O(n)$. 
 Definiramo $T_3 := T''$.
 
 \end{proof}
@@ -283,7 +379,7 @@ Promotrimo sada kolika je vremenska složenost simulacije konačnog broja koraka
 
 \begin{lemma}\label{lemma:t4}\footnote{Za ulaz oblika $\left < M \right >10^*$, $D$ simulira $M$ u vremenu $d \cdot g(n)$ gdje je $d$ neka konstanta, $g(n)$ vremenska složenost stroja $N$.}
 Neka je M Turingov stroj nad abecedom $\Sigma = \{0,1\}$, $\left < M \right >$ njegov kod u abecedi $\Sigma $ i $f: \mathbb{N} \to \mathbb{N}$ vremenski konstruktibilna funkcija.
-Postoji 3-tragovni Turingov stroj $T_4$ koji za ulaz $w \in \Sigma^*$, $w = \left < M \right >01^*$ na prvom tragu i $k := \left \lceil{ \frac{f(n)}{log_2(f(n))} }\right \rceil $ na 2. tragu, simulaira k koraka rada stroja $M$ s ulazom $\left < M \right >01^*$ u vremenu $O(k \cdot log_2(f(n)))$.\newline Broj k je dan u binarnom zapisu.
+Postoji 3-tragovni Turingov stroj $T_4$ koji za ulaz $w \in \Sigma^*$, $n := \left | w \right |$, $w = \left < M \right >01^*$ na prvom tragu i $k := \left \lceil{ \frac{f(n)}{log_2(f(n))} }\right \rceil $ na 2. tragu, simulaira k koraka rada stroja $M$ s ulazom $\left < M \right >01^*$ u vremenu $O(k \cdot log_2(f(n)))$.\newline Broj k je dan u binarnom zapisu.
 \end{lemma}
 \begin{proof}
 
