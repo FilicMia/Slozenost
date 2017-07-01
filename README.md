@@ -6,8 +6,8 @@ Upoznavanje s osnovnim klasama složenosti. Nizom primjera algoritama bit će po
 opisane pojedine klase složenosti. Posebno će biti istaknuti neki otvoreni problemi u teoriji složenosti.
 https://www.math.pmf.unizg.hr/hr/teaching-vukovic
 
-U ovoj mapi se nalazi seminar  (main.pdf) napravljen u sklopu kolegija SLoženost algoritama na temu: 
+U ovoj mapi se nalazi seminar  (main.pdf) napravljen u sklopu kolegija Složenost algoritama na temu: 
 Dokaz teorema o vremenskoj hijerarhiji.
 
-Dokaz jednoga od najvažnijih rezultata računarske
+Dokaz teorema o vremenskoj hijerarhiji je dio dokaza jednoga od najvažnijih rezultata računarske
 teorije složenosti: ”Bez obzira na složenost problema, uvijek će postojati teži.”
