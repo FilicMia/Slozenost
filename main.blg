@@ -4,44 +4,44 @@ The top-level auxiliary file: main.aux
 A level-1 auxiliary file: preamble/frontpage.aux
 The style file: alpha.bst
 Database file #1: references.bib
-You've used 13 entries,
+You've used 14 entries,
             2543 wiz_defined-function locations,
-            623 strings with 6354 characters,
-and the built_in function-call counts, 3899 in all, are:
-= -- 387
-> -- 154
-< -- 9
-+ -- 46
-- -- 45
-* -- 183
-:= -- 650
-add.period$ -- 51
-call.type$ -- 13
-change.case$ -- 70
-chr.to.int$ -- 12
-cite$ -- 13
-duplicate$ -- 149
-empty$ -- 326
-format.name$ -- 67
-if$ -- 817
+            627 strings with 6591 characters,
+and the built_in function-call counts, 4173 in all, are:
+= -- 415
+> -- 162
+< -- 10
++ -- 48
+- -- 47
+* -- 194
+:= -- 694
+add.period$ -- 55
+call.type$ -- 14
+change.case$ -- 75
+chr.to.int$ -- 13
+cite$ -- 14
+duplicate$ -- 160
+empty$ -- 351
+format.name$ -- 70
+if$ -- 876
 int.to.chr$ -- 2
 int.to.str$ -- 0
 missing$ -- 4
-newline$ -- 80
-num.names$ -- 39
-pop$ -- 115
+newline$ -- 86
+num.names$ -- 42
+pop$ -- 123
 preamble$ -- 1
-purify$ -- 83
+purify$ -- 89
 quote$ -- 0
-skip$ -- 135
+skip$ -- 146
 stack$ -- 0
-substring$ -- 91
-swap$ -- 13
-text.length$ -- 9
+substring$ -- 98
+swap$ -- 14
+text.length$ -- 10
 text.prefix$ -- 9
 top$ -- 0
-type$ -- 96
+type$ -- 104
 warning$ -- 0
-while$ -- 30
-width$ -- 16
-write$ -- 184
+while$ -- 32
+width$ -- 17
+write$ -- 198

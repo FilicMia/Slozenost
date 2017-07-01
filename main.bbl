@@ -7,7 +7,7 @@ Paul Beame.
   2004.
 \newblock {stranica 5, zadnji paragraf, [Online; posjećeno \today]}.
 
-\bibitem[FS66]{teorem2trake}
+\bibitem[FS66]{teorem2trake2}
 F.C.Hennie and R.~E. Stearns.
 \newblock \textit{Two-Tape Simulation of Multitape Turing Machines }.
 \newblock \url{http://www.dcs.fmph.uniba.sk/~fduris/VKTI/2tape.pdf}, 1966.
@@ -20,10 +20,12 @@ Lance Fortnow and Rahul Santhanam.
   2016.
 \newblock {[Online; posjećeno \today]}.
 
-\bibitem[Fü82]{teoremktraka}
+\bibitem[Fü82]{teorem2traka}
 Martin Fürer.
 \newblock \textit{The Tight Deterministic Time Hierarchy}.
-\newblock \url{http://dl.acm.org/citation.cfm?doid=800070.802172}, 1982.
+\newblock
+  \url{http://www.cse.psu.edu/~fhs/Significant%20research%20results.html},
+  1982.
 \newblock {[Online; posjećeno \today]}.
 
 \bibitem[Gha12]{SipserErrata}
@@ -85,6 +87,14 @@ Mladen Vuković.
 \newblock
   \url{https://www.math.pmf.unizg.hr/sites/default/files/pictures/sa-predavanja-2015-11.pdf},
   2016.
+\newblock {[Online; posjećeno \today]}.
+
+\bibitem[wJP78]{teoremktraka}
+w.~J.~Paul.
+\newblock \textit{On Time Hierarchies}.
+\newblock
+  \url{http://ac.els-cdn.com/002200007990028X/1-s2.0-002200007990028X-main.pdf?_tid=e876be7c-56c6-11e7-b6bb-00000aacb35e&acdnat=1498079976_17d3c54c3afd5c6b8f01e2fa938fe947},
+  1978.
 \newblock {[Online; posjećeno \today]}.
 
 \end{thebibliography}

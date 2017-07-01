@@ -132,8 +132,7 @@ Općenito, glavnim mjerama složenosti smatramo: (1) vremensku i (2) prostornu s
 Inačica teorema o vremenskoj hijerarhiji je više: $DTIME$ ili $NTIME$ o Turingovovom stroju s jednom ili više traka.
 Sve inačice sadrže istu ideju, ali se razlikuju u detaljima.
 U ovom radu, bavimo se isključivo $DTIME$ inačicom o Turingovom stroj s jednom trakom koju je moguće pronaći u \cite{sipser2006}. 
-$DTIME$ inačicu o Turingovom stroj s dvije trake moguće je pronaći u \cite{teorem2trake},
-s $k$ traka u \cite{teoremktraka}, a $NTIME$ u \cite{teoremntime} i \cite{teoremntime2}
+Iskaze nekih drugih inačica teorema je moguće pronaći na kraju u prilogu $A$.
 
 Sljedeće stranice donose postepeni dokaz odabrane inačice teorema.
  Kako bi se on što bolje razumio, savjetuje se čitatelja da utvrdi razumijevanje sljedećih pojmova:
@@ -703,10 +702,36 @@ uvedenom modifikacijom, u \textit{Fazi 2} zahtjevamo da $n_N$ mora biti veći i 
 %Na kraju, potrebno je još promijeniti korak \ref{korak13} u teoremu \ref{timehierarhy},
 %na način da se izvede prvo $T_2$ na 2. tragu, pa zatim $T_{311}$ iz gornje leme na 1. i 2. tragu ne mijenjajući 1. trag i zapisujući vrijednost $\left \lceil{ \frac{ 
 %f(n)}{|M|^3+log_2(f(n)) }}\right \rceil$ u binarnom obliku na 2. trag stroja $D$.
-
 \section{Popis literature}
 \renewcommand{\refname}{}
 \bibliographystyle{alpha}
 \bibliography{references}
+\appendix
+\section{Prilog: Neke druge inačice \textit{Teorema o vremenskoj hijerarhiji}}
+U prilogu se iskazuju 4 drugačije inačice \textit{Teorema o vremenskoj hijerarhiji}.
+Prvo donosimo iskaz $DTIME$ inačice \textit{Teorema o vremenskoj hijerarhiji} o Turingovom stroj s dvije trake\cite{teorem2traka,teorem2trake2} pa
+s $k$ traka \cite{teoremktraka}. Na kraju slijede 2 $NTIME$ inačice koje je moguće naći u \cite{teoremntime}, odnosno \cite{teoremntime2}.
+
+\begin{theorem}[Teorem o vremenskoj hijerarhiji (2 trake)]
+	Neka je $f : \mathbb{N} \to \mathbb{N}$ vremenski konstruktibilna funkcija. Tada postoji jezik \textbf{L} koji je odlučiv na dvotračnom determinističkom Turingovom stroju vremenske složenosti $O(f\left ( n \right ) )$, ali nije odlučiv ni na jednom dvotračnom determinističkom Turingovom stroju vremenske složenosti $o(f\left ( n \right ))$.
+\end{theorem}
+
+\begin{theorem}[Teorem o vremenskoj hijerarhiji (k traka)]
+	Neka je $k \in \mathbb{N}$, $f_1,f_2 : \mathbb{N} \to \mathbb{N}$ t.d. 
+	$lim (inf)_{n \to \infty} \frac{f_1(n) \cdot log^*(f_1(n))}{f_2(n)} = 0$ i $f_2$ je vremenski konstruktibilna funkcija na nekom k-tračnom determinističkom Turingovom stroju. Tada postoji jezik \textbf{L} $\in DTIME_k(f_2\left ( n \right ) )$, ali \textbf{L} $\notin DTIME_k(f_1\left ( n \right ) )$.
+\end{theorem}
+S $DTIME_k(f(n))$ označavamo skup svih jezika koji su odlučivi na nekom k-tračnom Turingovom stroju vremenske složenosti $O(f(n))$.
+Također, $log^*(n) := min \left \{k | 2^{2^{2^{... k_{times}}}} \geq n \right \} $, tj. najmanji $k$ takav da vijedi
+$log_2^k(n) \leq 1$.
+
+\begin{theorem}[Teorem o vremenskoj hijerarhiji (NTIME \cite{teoremntime})]
+Neka su $d \geq 1$ i $ d' > d$ neke konstante i $f : \mathbb{N} \to \mathbb{N}$, $f \in o(n^d)$, vremenski konstruktibilna funkcija. Tada vrijedi $NTIME(n^d) \not \subseteq \frac{NTIME(t)}{n^{\frac{1}{d'}}} $.
+\end{theorem}
+
+\begin{theorem}[Teorem o vremenskoj hijerarhiji (NTIME 2 \cite{teoremntime2})]
+	Neka je $f : \mathbb{N} \to \mathbb{N}$ vremenski konstruktibilna funkcija i
+	$f_2: \mathbb{N} \to \mathbb{N} $, $f_2(n+1) = o(f(n))$. Tada postoji jezik \textbf{L} $\in NTIME(f\left ( n \right ) )$, ali \textbf{L} nije iz $NTIME(f_2\left ( n \right ) )$.
+\end{theorem}
+
 \end{otherlanguage}
 \end{document}
